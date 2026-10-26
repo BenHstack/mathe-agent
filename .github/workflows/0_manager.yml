@@ -1,0 +1,18 @@
+name: 0 - Manager
+on:
+  issues:
+    types: [opened]
+permissions:
+  issues: write
+jobs:
+  run-manager:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+      - run: pip install requests
+      - run: python agent_manager.py
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }} # <-- Sicher übergeben
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
