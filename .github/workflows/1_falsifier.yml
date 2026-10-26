@@ -1,0 +1,19 @@
+name: 1 - Falsifizierer
+on:
+  issues:
+    types: [labeled]
+permissions:
+  issues: write
+jobs:
+  run-falsifier:
+    if: github.event.label.name == 'status: ready-for-falsification'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+      - run: pip install requests
+      - run: python agent_falsifier.py
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
