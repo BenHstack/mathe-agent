@@ -26,4 +26,4 @@ response = requests.post(
 answer = response.json()["choices"][0]["message"]["content"]
 
 subprocess.run(["gh", "issue", "comment", issue_number, "--body", f"### 🧠 Manager (Strategie)\n{answer}"])
-subprocess.run(["gh", "issue", "edit", issue_number, "--add-label", "status: ready-for-falsification"])
+subprocess.run(["gh", "issue", "edit", issue_number, "--add-label", "status-ready-for-falsification"])
