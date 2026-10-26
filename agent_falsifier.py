@@ -23,7 +23,7 @@ WICHTIG: Beende deine Antwort mit dem Wort [WEITER_ZUM_BEWEIS].
 response = requests.post(
     "https://api.groq.com/openai/v1/chat/completions",
     headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-    json={"model": "llama-3.3-70b-versatile", "messages": [{"role": "user", "content": prompt}]}
+    json={"model": "openai/gpt-oss-120b", "messages": [{"role": "user", "content": prompt}]}
 )
 answer = response.json()["choices"][0]["message"]["content"]
 
