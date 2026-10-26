@@ -6,7 +6,7 @@ permissions:
   issues: write
 jobs:
   run-falsifier:
-    if: github.event.label.name == 'status: ready-for-falsification'
+    if: ${{ github.event.label.name == 'status-ready-for-falsification' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
