@@ -8,7 +8,7 @@ permissions:
   issues: write
 jobs:
   run-prover:
-    if: github.event.label.name == 'status: ready-for-proof'
+    if: ${{ github.event.label.name == 'status-ready-for-proof' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
