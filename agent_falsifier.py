@@ -28,4 +28,4 @@ response = requests.post(
 answer = response.json()["choices"][0]["message"]["content"]
 
 subprocess.run(["gh", "issue", "comment", issue_number, "--body", f"### 🕵️ Falsifizierer\n{answer}"])
-subprocess.run(["gh", "issue", "edit", issue_number, "--add-label", "status: ready-for-proof"])
+subprocess.run(["gh", "issue", "edit", issue_number, "--add-label", "status-ready-for-proof"])
