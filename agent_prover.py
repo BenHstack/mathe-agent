@@ -1,5 +1,6 @@
 import os, requests, subprocess
 
+api_key = os.environ.get("GROQ_API_KEY")
 issue_number = os.environ["ISSUE_NUMBER"]
 issue_context = subprocess.check_output(["gh", "issue", "view", issue_number, "--json", "body,comments"]).decode("utf-8")
 
@@ -15,9 +16,9 @@ WICHTIG: Beende deine Antwort mit [BEWEIS_FERTIG].
 """
 
 response = requests.post(
-    "https://text.pollinations.ai/openai",
-    headers={"Content-Type": "application/json"},
-    json={"model": "openai", "messages": [{"role": "user", "content": prompt}]}
+    "https://api.groq.com/openai/v1/chat/completions",
+    headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+    json={"model": "llama-3.3-70b-versatile", "messages": [{"role": "user", "content": prompt}]}
 )
 proof_text = response.json()["choices"][0]["message"]["content"]
 
