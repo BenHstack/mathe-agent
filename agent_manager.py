@@ -21,7 +21,7 @@ WICHTIG: Beende deine Antwort mit dem Wort [STRATEGIE_FERTIG].
 response = requests.post(
     "https://api.groq.com/openai/v1/chat/completions",
     headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-    json={"model": "llama-3.3-70b-versatile", "messages": [{"role": "user", "content": prompt}]}
+    json={"model": "openai/gpt-oss-120b", "messages": [{"role": "user", "content": prompt}]}
 )
 
 # --- DEBUGGING-START ---
