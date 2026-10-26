@@ -8,18 +8,22 @@ prompt = f"""Du bist ein extrem strenger, pedantischer Mathematik-Professor für
 Hier ist der eingereichte Beweis:
 {proof_content}
 
-Prüfe jeden Schritt. Suche nach Lücken, Zirkelschlüssen, falsch angewendeten Theoremen (z.B. Kellys Lemma) oder ungenauen Definitionen von "unlabelled" oder "isomorph".
-Schreibe dein Review frei und ausführlich. Wenn du Fehler findest, erkläre genau, was falsch ist.
-Am Ende deiner Antwort musst du dich entscheiden:
-Wenn der Beweis wasserdicht ist, schreibe exakt: [ENTSCHEIDUNG: APPROVED]
-Wenn der Beweis fehlerhaft ist, schreibe exakt: [ENTSCHEIDUNG: REJECTED]
+Prüfe jeden Schritt auf Lücken und Fehler.
+WICHTIG: Du MUSST deine Antwort mit dem Urteil beginnen!
+Schreibe als allererstes entweder [ENTSCHEIDUNG: APPROVED] (wenn fehlerfrei) oder [ENTSCHEIDUNG: REJECTED] (wenn Fehler vorhanden sind).
+Schreibe DANACH deine ausführliche Begründung.
 """
 
 response = requests.post(
     "https://api.groq.com/openai/v1/chat/completions",
     headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-    json={"model": "openai/gpt-oss-120b", "messages": [{"role": "user", "content": prompt}]}
+    json={"model": "openai/gpt-oss-120b", "messages": [{"role": "user", "content": prompt}], "max_tokens": 3000}
 )
+
+if "choices" not in response.json() or not response.json()["choices"]:
+    print("❌ API-Fehler:", response.text)
+    raise SystemExit(1)
+
 review_text = response.json()["choices"][0]["message"]["content"]
 
 subprocess.run(["gh", "pr", "comment", pr_number, "--body", f"### 🕵️ Reviewer\n{review_text}"])
