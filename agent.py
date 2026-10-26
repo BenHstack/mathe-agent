@@ -10,13 +10,10 @@ The program should print each perfect number it finds.
 Output ONLY the raw Julia code, without any Markdown formatting or explanations."""
 
 response = requests.post(
-    "https://models.github.ai/inference/chat/completions",  # <-- NEUER, KORREKTER ENDPUNKT
-    headers={
-        "Authorization": f"Bearer {token}",
-        "Content-Type": "application/json"  # <-- WICHTIG: Dieser Header fehlte
-    },
+    "https://text.pollinations.ai/openai", # Pollinations Endpunkt
+    headers={"Content-Type": "application/json"}, # Kein Auth-Header nötig!
     json={
-        "model": "deepseek/DeepSeek-R1",
+        "model": "openai", # oder "mistral"
         "messages": [{"role": "user", "content": prompt}]
     }
 )
