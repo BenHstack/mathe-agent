@@ -1,5 +1,6 @@
 import os, requests, subprocess
 
+api_key = os.environ.get("GROQ_API_KEY")
 pr_number = os.environ["PR_NUMBER"]
 proof_content = subprocess.check_output(["gh", "pr", "diff", pr_number]).decode("utf-8")
 
@@ -15,9 +16,9 @@ Wenn der Beweis fehlerhaft ist, schreibe exakt: [ENTSCHEIDUNG: REJECTED]
 """
 
 response = requests.post(
-    "https://text.pollinations.ai/openai",
-    headers={"Content-Type": "application/json"},
-    json={"model": "openai", "messages": [{"role": "user", "content": prompt}]}
+    "https://api.groq.com/openai/v1/chat/completions",
+    headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+    json={"model": "llama-3.3-70b-versatile", "messages": [{"role": "user", "content": prompt}]}
 )
 review_text = response.json()["choices"][0]["message"]["content"]
 
