@@ -18,7 +18,7 @@ WICHTIG: Beende deine Antwort mit [BEWEIS_FERTIG].
 response = requests.post(
     "https://api.groq.com/openai/v1/chat/completions",
     headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-    json={"model": "llama-3.3-70b-versatile", "messages": [{"role": "user", "content": prompt}]}
+    json={"model": "openai/gpt-oss-120b", "messages": [{"role": "user", "content": prompt}]}
 )
 proof_text = response.json()["choices"][0]["message"]["content"]
 
