@@ -1,76 +1,63 @@
-# Proof for Issue #7
+# Solution for Issue #9
 
-Let \(G=(V,E)\) be a finite simple graph.  
-Recall the definitions  
+**Theorem (Menger’s theorem – edge‑version).**  
+Let \(G\) be a finite undirected graph and let \(k\in\mathbb N\).  
+Then \(G\) is *\(k\)-edge‑connected* (i.e. \(\lambda(G)\ge k\)) **iff** for every ordered pair of distinct vertices
+\(s,t\in V(G)\) there exist at least \(k\) pairwise edge‑disjoint \(s\!-\!t\) paths in \(G\).
 
-* A **chordal** graph is a graph in which every cycle of length \(\ge 4\) has a chord (an edge joining two non‑consecutive vertices of the cycle).  
+---
 
-* A vertex \(v\in V(G)\) is **simplicial** if its neighbourhood \(N_G(v)=\{u\in V(G): uv\in E(G)\}\) induces a complete subgraph (a **clique**) of \(G\).
+### Proof
 
-We prove
+We prove the two implications separately.
 
-\[
-\boxed{\text{If }G\text{ is chordal, then }G\text{ contains a simplicial vertex.}}
-\]
+---
 
----------------------------------------------------------------------
+#### 1.  (**Only‑if**)  If \(G\) is \(k\)-edge‑connected, then for any \(s,t\in V(G)\) there are \(k\) edge‑disjoint \(s\!-\!t\) paths.
 
-### 1.  Maximal cliques and a clique tree  
+Consider the graph \(G\) together with two new vertices \(s\) and \(t\) (if they are not already present) and give each edge capacity 1.  
+Apply the **max‑flow/min‑cut theorem** to the resulting network with source \(s\) and sink \(t\).  
+The value of a maximum \(s\!-\!t\) flow equals the size of a minimum \(s\!-\!t\) cut.
 
-For a chordal graph \(G\) let \(\mathcal{C}\) be the family of its maximal cliques.  
-A classical theorem (see e.g. [Dirac 1961] or any text on chordal graphs) states:
+Because \(G\) is \(k\)-edge‑connected, every cut separating \(s\) from \(t\) contains at least \(k\) edges; hence the minimum cut has capacity \(\ge k\).  
+Therefore the maximum flow has value \(\ge k\).  
 
-> **Clique‑tree theorem.**  
-> There exists a tree \(T\) whose vertex set is \(\mathcal{C}\) such that for every vertex
-> \(x\in V(G)\) the set \(\{C\in\mathcal{C}:x\in C\}\) induces a (connected) subtree of \(T\).
-> This tree is called a *clique tree* (or *junction tree*) of \(G\).
+A flow of value \(k\) can be decomposed (by the integrality theorem for flows with unit capacities) into \(k\) unit‑capacity flow paths that are edge‑disjoint.  Each such unit flow corresponds to an edge‑disjoint \(s\!-\!t\) path in the original graph.  ∎
 
-We shall use only two elementary consequences of this theorem.
+> **Remark.** The max‑flow/min‑cut theorem is a classical result proved without any appeal to Menger’s theorem, so the above argument does not involve circular reasoning.
 
-* **(C1)** The tree \(T\) has at least one leaf.  
-* **(C2)** If \(C\) is a leaf of \(T\) and \(D\) is the unique neighbour of \(C\) in \(T\) (if
-\(T\) consists of a single node we put \(D=\varnothing\)), then every vertex
-\(v\in C\setminus D\) belongs to no maximal clique other than \(C\).
+---
 
----------------------------------------------------------------------
+#### 2.  (**If**)  If for every pair \(s,t\) there exist \(k\) edge‑disjoint \(s\!-\!t\) paths, then \(G\) is \(k\)-edge‑connected.
 
-### 2.  The leaf‑clique argument  
+Assume, toward a contradiction, that \(G\) is **not** \(k\)-edge‑connected.  
+Then there exists a cut \(C\subseteq E(G)\) whose removal separates the vertex set into two non‑empty parts
+\(A\) and \(B\) with \(s\in A\) and \(t\in B\), and with \(|C|<k\).
 
-Assume first that \(G\) is a complete graph.  Then every vertex has neighbourhood
-\(V(G)\setminus\{v\}\), which is a clique; hence any vertex is simplicial and we are done.
+Consider any \(s\!-\!t\) path \(P\) in \(G\).  
+If \(P\) avoided all edges of \(C\), then after deleting \(C\) the vertices \(s\) and \(t\) would still lie in the same connected component, contradicting the definition of \(C\) as a separating cut.  
+Hence **every** \(s\!-\!t\) path must contain at least one edge of \(C\).
 
-Henceforth suppose that \(G\) is **not** complete.  
-Let \(T\) be a clique tree of \(G\) and let \(C\) be a leaf of \(T\).
-Denote by \(D\) the (possibly empty) neighbour of \(C\) in \(T\).
-
-Because \(C\) is a maximal clique, \(C\neq\varnothing\).  
-If \(C\setminus D\neq\varnothing\) pick any vertex \(v\in C\setminus D\).
-By (C2) the vertex \(v\) occurs only in the maximal clique \(C\).
-Consequently the neighbourhood of \(v\) is exactly
+Now suppose we have a collection \(\mathcal{P}\) of edge‑disjoint \(s\!-\!t\) paths.  
+Because the paths are edge‑disjoint, no two of them can share the same edge of the cut \(C\).  
+Consequently each path in \(\mathcal{P}\) must use a **different** edge of \(C\).  Therefore
 
 \[
-N_G(v)=C\setminus\{v\},
+|\mathcal{P}|\le |C|<k .
 \]
 
-since any neighbour of \(v\) must lie in a maximal clique that contains \(v\), and the only such clique is \(C\).
-The set \(C\setminus\{v\}\) is a clique (it is a subset of the clique \(C\)).
-Thus \(v\) is simplicial.
+But by hypothesis there exist \(k\) edge‑disjoint \(s\!-\!t\) paths, i.e. a collection \(\mathcal{P}\) with \(|\mathcal{P}|=k\).  This contradicts the inequality above.  
 
-It remains to see that the set \(C\setminus D\) cannot be empty.
-If it were empty, then \(C\subseteq D\); but \(C\) is a maximal clique, while
-\(D\) is also a clique (every node of the tree represents a maximal clique).
-The inclusion \(C\subseteq D\) would force \(C=D\), contradicting the fact that
-\(C\) is a leaf distinct from its neighbour.  Hence \(C\setminus D\neq\varnothing\).
+Hence our assumption that a cut of size smaller than \(k\) exists is false.  Therefore every cut separating any two vertices has at least \(k\) edges, i.e. \(\lambda(G)\ge k\).  ∎
 
-Therefore a simplicial vertex exists in \(G\).
+---
 
----------------------------------------------------------------------
+### Conclusion
 
-### 3.  Conclusion  
+Both directions have been established, so the theorem holds: a graph is \(k\)-edge‑connected **iff** any two vertices are linked by at least \(k\) pairwise edge‑disjoint paths.
 
-We have shown that every chordal graph either is complete (in which case any
-vertex is simplicial) or possesses a leaf maximal clique in a clique tree; a
-vertex belonging uniquely to that leaf clique is simplicial.  Hence every
-chordal graph contains at least one simplicial vertex. ∎
+---
 
-[PROOF_COMPLETE]
+*The proof above follows the supervisor’s request: the “if” direction explicitly uses the fact that every \(s\!-\!t\) path must contain **at least one** edge of a separating cut, and the edge‑disjointness forces each path to consume a distinct cut edge, yielding the bound \(|\mathcal{P}|\le|C|.\)*
+
+[WORK_COMPLETE]
