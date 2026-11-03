@@ -1,0 +1,23 @@
+name: 1 - Worker
+on:
+  issues:
+    types: [labeled]
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+jobs:
+  run-worker:
+    if: github.event.label.name == 'status-ready-for-work'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - run: python agent_worker.py
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }} # <-- BOT
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
