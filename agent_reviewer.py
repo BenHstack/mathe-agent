@@ -2,7 +2,9 @@ import os, requests, subprocess
 
 api_key = os.environ.get("GROQ_API_KEY")
 pr_number = os.environ["PR_NUMBER"]
-proof_content = subprocess.check_output(["gh", "pr", "diff", pr_number]).decode("utf-8")
+
+# text=True macht die Ausgabe direkt zu einem String
+proof_content = subprocess.check_output(["gh", "pr", "diff", pr_number], text=True)
 
 prompt = f"""Du bist ein extrem strenger, pedantischer Mathematik-Professor für Graphentheorie.
 Hier ist der eingereichte Beweis:
@@ -26,10 +28,11 @@ if "choices" not in response.json() or not response.json()["choices"]:
 
 review_text = response.json()["choices"][0]["message"]["content"]
 
-subprocess.run(["gh", "pr", "comment", pr_number, "--body", f"### 🕵️ Reviewer\n{review_text}"])
+# Kommentar schreiben (check=True wirft Fehler, falls Rechte fehlen)
+subprocess.run(["gh", "pr", "comment", pr_number, "--body", f"### 🕵️ Reviewer\n{review_text}"], check=True)
 
 if "[ENTSCHEIDUNG: APPROVED]" in review_text:
-    subprocess.run(["gh", "pr", "review", pr_number, "--approve", "--body", "Wasserdicht. Freigegeben."])
-    subprocess.run(["gh", "pr", "merge", pr_number, "--merge", "--delete-branch"])
+    subprocess.run(["gh", "pr", "review", pr_number, "--approve", "--body", "Wasserdicht. Freigegeben."], check=True)
+    subprocess.run(["gh", "pr", "merge", pr_number, "--merge", "--delete-branch"], check=True)
 else:
-    subprocess.run(["gh", "pr", "review", pr_number, "--request-changes", "--body", "Bitte überarbeiten. Siehe Review-Kommentar."])
+    subprocess.run(["gh", "pr", "review", pr_number, "--request-changes", "--body", "Bitte überarbeiten. Siehe Review-Kommentar."], check=True)
