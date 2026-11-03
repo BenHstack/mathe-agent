@@ -1,6 +1,6 @@
 import os, requests, subprocess, time
 
-time.sleep(90)
+time.sleep(60)
 api_key = os.environ.get("GROQ_API_KEY")
 issue_number = os.environ["ISSUE_NUMBER"]
 
@@ -43,8 +43,13 @@ IMPORTANT: End your response with the exact word [WORK_COMPLETE].
 response = requests.post(
     "https://api.groq.com/openai/v1/chat/completions",
     headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-    json={"model": "openai/gpt-oss-120b", "messages": [{"role": "user", "content": prompt}], "max_tokens": 2000}
+    json={"model": "openai/gpt-oss-120b", "messages": [{"role": "user", "content": prompt}], "max_tokens": 4000} # <-- ERHÖHT
 )
+
+# NEU: Fehlerprüfung
+if "choices" not in response.json() or not response.json()["choices"]:
+    print(f"❌ API Error: {response.text}")
+    raise SystemExit(1)
 
 proof_text = response.json()["choices"][0]["message"]["content"]
 
@@ -66,3 +71,17 @@ except subprocess.CalledProcessError:
 
 print("✅ Worker finished. Removing 'status-ready-for-work' label to reset the loop.")
 subprocess.run(["gh", "issue", "edit", issue_number, "--remove-label", "status-ready-for-work"], check=True)
+
+print("✅ Worker finished. Triggering Supervisor Review via API...")
+# Finde die PR-Nummer heraus
+pr_info = subprocess.check_output(
+    ["gh", "pr", "list", "--head", f"proof/issue-{issue_number}", "--json", "number", "-q", ".[0].number"], 
+    text=True
+).strip()
+
+if pr_info:
+    # Starte den Supervisor-Workflow und übergib die PR-Nummer
+    subprocess.run(
+        ["gh", "workflow", "run", "2 - Supervisor Review", "-f", f"pr_number={pr_info}"], 
+        check=True
+    )
