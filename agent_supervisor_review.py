@@ -1,6 +1,6 @@
-import os, requests, subprocess, time
+import os, requests, subprocess, time ,base64
 
-# 90 Sekunden Pause, um das Groq-Rate-Limit sicher einzuhalten
+# 60 Sekunden Pause, um das Groq-Rate-Limit sicher einzuhalten
 time.sleep(60) 
 api_key = os.environ.get("GROQ_API_KEY")
 pr_number = os.environ["PR_NUMBER"]
@@ -26,8 +26,18 @@ if commit_count >= 5:
 # 3. Die originale Aufgabe aus dem Issue lesen (Verhindert Halluzinationen)
 issue_body = subprocess.check_output(["gh", "issue", "view", issue_number, "--json", "body", "-q", ".body"], text=True)
 
-# Den vom Worker generierten Code aus dem PR lesen
-proof_content = subprocess.check_output(["gh", "pr", "diff", pr_number], text=True)
+# Hole den Inhalt der Datei beweis.md direkt aus dem PR-Branch
+repo_name = subprocess.check_output(["gh", "repo", "view", "--json", "nameWithOwner", "-q", ".nameWithOwner"], text=True).strip()
+try:
+    # Frage die GitHub API nach der Datei im Branch (z.B. proof/issue-15)
+    file_response = subprocess.check_output(
+        ["gh", "api", f"repos/{repo_name}/contents/beweis.md?ref={branch_name}", "-q", ".content"], 
+        text=True
+    ).strip()
+    # GitHub schickt die Datei Base64-kodiert. Wir müssen sie dekodieren.
+    proof_content = base64.b64decode(file_response).decode("utf-8")
+except subprocess.CalledProcessError:
+    proof_content = "No file found in the PR branch."
 
 prompt = f"""You are the Supervisor, an extremely strict mathematics professor.
 Here is the ORIGINAL problem that needs to be solved:
