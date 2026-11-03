@@ -1,6 +1,6 @@
 import os, requests, subprocess, time
 
-time.sleep(90)
+time.sleep(60)
 api_key = os.environ.get("GROQ_API_KEY")
 pr_number = os.environ["PR_NUMBER"]
 
