@@ -1,4 +1,7 @@
-import os, requests, subprocess
+import os, requests, subprocess, time
+
+# 90 Sekunden Pause
+time.sleep(90)
 
 api_key = os.environ.get("GROQ_API_KEY")
 issue_number = os.environ["ISSUE_NUMBER"]
@@ -9,42 +12,31 @@ if "emergency-stop" in labels:
     print("🚨 NOTFALLSCHALTER AKTIVIERT. Agent wird gestoppt.")
     raise SystemExit(0)
 
-# 1. Lese den bisherigen Verlauf (Aufgabe + Kommentar des Managers)
-issue_context = subprocess.check_output(["gh", "issue", "view", issue_number, "--json", "body,comments"]).decode("utf-8")
+issue_context = subprocess.check_output(["gh", "issue", "view", issue_number, "--json", "body,comments"], text=True)
 
-# 2. Der Prompt (mit 3000 Token Limit)
-prompt = f"""Du bist ein brillanter, kreativer Mathematiker für Graphentheorie.
-Hier ist der bisherige Verlauf:
+prompt = f"""You are a brilliant, creative mathematician specializing in graph theory.
+Here is the context so far:
 {issue_context}
 
-Deine Aufgabe: Versuche, die Vermutung zu widerlegen (ein Gegenbeispiel zu finden).
-Überlege dir spezielle Graphklassen, bei denen das Löschen von Knoten zu Verwechslungen führen könnte.
-Wenn du ein Gegenbeispiel findest, beschreibe die Graphen exakt und beweise, dass ihre Decks identisch sind.
-Wenn du keins findest, beschreibe kurz und präzise, warum die Struktur der Decks so mächtig ist.
+Your task: Try to refute the conjecture by finding a counterexample.
+Consider special graph classes where deleting vertices might lead to confusion.
+If you find a counterexample, describe the graphs exactly and prove that their decks are identical.
+If you don't find one, briefly and precisely explain why the structure of the decks is so powerful.
 
-Fasse dich kurz und konzentriere dich auf die mathematische Essenz.
-WICHTIG: Beende deine Antwort mit dem Wort [WEITER_ZUM_BEWEIS].
+Be concise and focus on the mathematical essence.
+IMPORTANT: End your response with the exact word [PROCEED_TO_PROOF].
 """
 
-# 3. KI aufrufen
 response = requests.post(
     "https://api.groq.com/openai/v1/chat/completions",
     headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-    json={
-        "model": "openai/gpt-oss-120b", 
-        "messages": [{"role": "user", "content": prompt}], 
-        "max_tokens": 3000
-    }
+    json={"model": "openai/gpt-oss-120b", "messages": [{"role": "user", "content": prompt}], "max_tokens": 2000}
 )
 
-# 4. Fehlerprüfung
 if "choices" not in response.json() or not response.json()["choices"]:
-    print("❌ API-Fehler:", response.text)
+    print("❌ API Error:", response.text)
     raise SystemExit(1)
 
-# 5. Antwort verarbeiten
 answer = response.json()["choices"][0]["message"]["content"]
-
-# 6. Kommentar ins Issue schreiben und Label für den Beweiser setzen
-subprocess.run(["gh", "issue", "comment", issue_number, "--body", f"### 🕵️ Falsifizierer\n{answer}"])
-subprocess.run(["gh", "issue", "edit", issue_number, "--add-label", "status-ready-for-proof"])
+subprocess.run(["gh", "issue", "comment", issue_number, "--body", f"### 🕵️ Falsifier\n{answer}"], check=True)
+subprocess.run(["gh", "issue", "edit", issue_number, "--add-label", "status-ready-for-proof"], check=True)
