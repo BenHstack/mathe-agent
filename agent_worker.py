@@ -63,3 +63,6 @@ try:
     subprocess.run(["gh", "pr", "create", "--title", f"Proof for #{issue_number}", "--body", f"Closes #{issue_number}.", "--base", "main", "--head", f"proof/issue-{issue_number}"], check=True)
 except subprocess.CalledProcessError:
     print("PR already exists, force-pushed update.")
+
+print("✅ Worker finished. Removing 'status-ready-for-work' label to reset the loop.")
+subprocess.run(["gh", "issue", "edit", issue_number, "--remove-label", "status-ready-for-work"], check=True)
