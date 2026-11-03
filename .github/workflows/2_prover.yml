@@ -16,6 +16,6 @@ jobs:
       - run: pip install requests
       - run: python agent_prover.py
         env:
-          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
