@@ -43,6 +43,9 @@ subprocess.run(["gh", "pr", "comment", pr_number, "--body", f"### 🎩 Superviso
 if "[DECISION: APPROVED]" in review_text:
     subprocess.run(["gh", "pr", "review", pr_number, "--approve", "--body", "Approved by Supervisor."], check=True)
     subprocess.run(["gh", "pr", "merge", pr_number, "--merge", "--delete-branch"], check=True)
+
+    subprocess.run(["gh", "issue", "comment", issue_number, "--body", "Proof approved and merged. Closing issue."], check=True)
+    subprocess.run(["gh", "issue", "close", issue_number], check=True)
 else:
     subprocess.run(["gh", "pr", "review", pr_number, "--request-changes", "--body", "Revise according to Supervisor feedback."], check=True)
     
