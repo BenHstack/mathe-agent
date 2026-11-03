@@ -1,108 +1,159 @@
-# Solution for Issue #11
+# Solution for Issue #13
 
-**Definitions**
+**Obstacle number of a planar graph**
 
-* A **graph** $G=(V,E)$ is finite, simple (no loops or multiple edges) unless otherwise stated.  
-* For $s,t\in V$, a set $\mathcal P=\{P_1,\dots ,P_r\}$ of $s$–$t$ paths is **internally disjoint** if for any distinct $i,j$ we have  
+For a (finite, simple) graph \(G\) a *geometric representation* consists of a set  
+\(P=\{p_v\mid v\in V(G)\}\subset \mathbb {R}^{2}\) of points in *general position*
+(no three collinear) and a (possibly empty) polygonal region \(\mathcal O\subset
+\mathbb {R}^{2}\) called the *obstacle*.  
+
+For two distinct vertices \(x,y\in V(G)\) let \(\overline{p_xp_y}\) denote the
+closed straight‑line segment joining the corresponding points.  
+The representation is an **obstacle representation** iff  
+
+* \(\overline{p_xp_y}\) is **disjoint from the interior of \(\mathcal O\)**
+   whenever \(xy\in E(G)\);
+* \(\overline{p_xp_y}\) meets the interior of \(\mathcal O\) whenever
+   \(xy\notin E(G)\).
+
+The *obstacle number* \(\operatorname{obs}(G)\) is the minimum number of
+obstacle regions needed for an obstacle representation of \(G\).
+
+--------------------------------------------------------------------
+
+## 1. The graph
+
+Let  
+
+\[
+G = C^{(1)}_{5}\,\cup\,C^{(2)}_{5}\,\cup\{v_{1}u_{1}\},
+\]
+
+where  
+
+* \(C^{(1)}_{5}=v_{1}v_{2}v_{3}v_{4}v_{5}v_{1}\) and  
+  \(C^{(2)}_{5}=u_{1}u_{2}u_{3}u_{4}u_{5}u_{1}\) are two vertex‑disjoint
+  5‑cycles, and  
+
+* the only extra edge is the *bridge* \(v_{1}u_{1}\).
+
+The graph is planar (draw the two pentagons one inside the other and join the
+bridge). We shall show that
+
+\[
+\operatorname{obs}(G)=2 .
+\]
+
+--------------------------------------------------------------------
+
+## 2. A 2‑obstacle representation (upper bound)
+
+### 2.1. Coordinates
+
+Take three parameters  
+
+\[
+R=1,\qquad r=\tfrac13,\qquad \varepsilon =0.05 .
+\]
+
+Place the vertices of the outer pentagon on the circle of radius \(R\) :
+
+\[
+p_{v_i}= \bigl(R\cos \theta_i,\;R\sin\theta_i\bigr),
+\qquad 
+\theta_i= \frac{2\pi (i-1)}{5}\;(i=1,\dots ,5).
+\]
+
+Place the inner pentagon on the concentric circle of radius \(r\) :
+
+\[
+p_{u_i}= \bigl(r\cos \phi_i,\;r\sin\phi_i\bigr),
+\qquad 
+\phi_i= \frac{2\pi (i-1)}{5}+ \frac{\pi}{5}
+\quad(i=1,\dots ,5).
+\]
+
+Thus the two pentagons are regular, vertex‑disjoint and the edge
+\(v_{1}u_{1}\) is a short radial segment.
+
+The three numbers were chosen so that
+
+* no three of the ten points are collinear (a direct check of all triples),
+* the distance from any vertex to the origin is either \(R\) or \(r\), so
+  no vertex lies on the boundary of the obstacles defined below.
+
+### 2.2. The two obstacles
+
+For a point \(p\) let \(\nu(p)\) denote the outward normal unit vector to the
+circle through \(p\).  
+Define two star‑shaped polygons:
+
+* **Outer star** \(\mathcal O_{\text{out}}\): for each outer vertex
+  \(p_{v_i}\) take the point  
+
   \[
-  V(P_i)\cap V(P_j)=\{s,t\}.
+  q_{v_i}=p_{v_i}+ \varepsilon\,\nu(p_{v_i}),
   \]
-  In other words no vertex other than the two terminals appears in more than one path.
-* The **vertex‑connectivity** $\kappa(G)$ of $G$ is the minimum cardinality of a vertex set $C\subseteq V$ whose removal disconnects $G$ (or makes it trivial).  
-  $G$ is **$k$‑vertex‑connected** (or **$k$‑connected**) iff $|V|\ge k+1$ and $\kappa(G)\ge k$; equivalently, the deletion of any set of fewer than $k$ vertices leaves $G$ connected.
 
----
+  and let \(\mathcal O_{\text{out}}\) be the convex hull of
+  \(\{q_{v_i}\mid i=1,\dots ,5\}\).  
+  It is a simple convex pentagon whose interior lies strictly outside the
+  outer pentagon, at distance about \(\varepsilon\) from each outer vertex.
 
-## Theorem (Menger, vertex version)
+* **Inner star** \(\mathcal O_{\text{in}}\): for each inner vertex
+  \(p_{u_i}\) take  
 
-*Let $G$ be a graph with $|V(G)|\ge k+1$ and let $k\in\mathbb N$.  
-Then $G$ is $k$‑vertex‑connected **iff** for every ordered pair of distinct vertices $s,t\in V(G)$ there exist $k$ internally disjoint $s$–$t$ paths.*
-
-We prove the two implications separately.
-
---------------------------------------------------------------------
-
-### 1.  $k$‑connectivity  $\Longrightarrow$  $k$ internally disjoint $s$–$t$ paths  
-
-Fix distinct vertices $s,t\in V(G)$.  
-We transform $G$ into a directed network $N_{s,t}$ in which each non‑terminal vertex has capacity 1.
-
-* For every vertex $v\in V\setminus\{s,t\}$ create two vertices $v_{\text{in}}$ and $v_{\text{out}}$ and the directed edge $e_v=(v_{\text{in}},v_{\text{out}})$ of **capacity 1**.
-* For each original (undirected) edge $uv\in E$ we add the two directed arcs  
   \[
-  (u_{\text{out}},v_{\text{in}}),\qquad (v_{\text{out}},u_{\text{in}})
+  q_{u_i}=p_{u_i}- \varepsilon\,\nu(p_{u_i}),
   \]
-  each of **infinite capacity** (or any number larger than $k$).
-* The source of the network is $s$ (which we keep as a single vertex) and the sink is $t$ (also a single vertex).  
-  No capacity restriction is placed on $s$ or $t$.
 
-Denote the resulting directed graph by $N_{s,t}$.  Any $s$–$t$ **flow** in $N_{s,t}$ of value $f$ corresponds to $f$ pairwise internally disjoint $s$–$t$ paths in the original graph $G$: each unit of flow traverses a distinct $v_{\text{in}}\!\to\!v_{\text{out}}$ edge, so no vertex (other than $s,t$) is used by two flow units.
+  i.e. a point displaced **inward** toward the centre, and let
+  \(\mathcal O_{\text{in}}\) be the convex hull of the five points
+  \(\{q_{u_i}\}\).  
+  This is a convex pentagon whose interior lies strictly inside the inner
+  pentagon, again at distance about \(\varepsilon\) from each inner vertex.
 
----
-
-#### Claim.  The maximum $s$–$t$ flow in $N_{s,t}$ has value at least $k$.
-
-*Proof.*  By the **max‑flow/min‑cut theorem** for networks with integer capacities, the value of a maximum flow equals the capacity of a minimum $s$–$t$ cut.  
-Consider any $s$–$t$ cut $C\subseteq V(N_{s,t})$.  In the original graph $G$ the set  
-
-\[
-X=\{v\in V(G)\setminus\{s,t\} : v_{\text{in}}\in C,\;v_{\text{out}}\notin C\}
-\]
-
-is a vertex set separating $s$ from $t$.  Its size equals the total capacity of the cut, because the only finite‑capacity arcs crossing from the $s$‑side to the $t$‑side are precisely the edges $e_v=(v_{\text{in}},v_{\text{out}})$ for $v\in X$, each of capacity 1.  Hence  
-
-\[
-\operatorname{cap}(C)=|X|.
-\]
-
-Since $G$ is $k$‑connected, every $s$–$t$ separating vertex set has size at least $k$, i.e. $|X|\ge k$.  Consequently every $s$–$t$ cut in $N_{s,t}$ has capacity $\ge k$, and the minimum cut capacity is at least $k$.  By max‑flow/min‑cut, the maximum flow value is at least $k$.
-
-∎
-
-Because all capacities are integers, there exists an **integral** maximum flow of value $k$.  Decomposing this flow into $k$ unit‑flows yields $k$ directed $s$–$t$ paths that are pairwise internally vertex‑disjoint in $G$.  Ignoring direction gives $k$ internally disjoint $s$–$t$ (undirected) paths in the original graph.
-
-Thus every pair $s,t$ is linked by $k$ internally disjoint paths.
+Both obstacles are convex, contain none of the ten vertices,
+and are disjoint from each other (the outer star surrounds the inner star).
 
 --------------------------------------------------------------------
 
-### 2.  Existence of $k$ internally disjoint $s$–$t$ paths  $\Longrightarrow$  $k$‑connectivity  
+### 2.3. Verification that all edges avoid the interiors
 
-Assume that for **every** ordered pair of distinct vertices $s,t$ there are $k$ internally disjoint $s$–$t$ paths.  
-We show $\kappa(G)\ge k$.
+*Every edge of the outer cycle* \(v_i v_{i+1}\) lies on the boundary of the
+outer regular pentagon, hence entirely inside the convex hull of
+\(\{p_{v_j}\}\) and **outside** \(\mathcal O_{\text{out}}\) (the outer star is
+pushed outward). The same holds for the inner cycle edges with respect to
+\(\mathcal O_{\text{in}}\).
 
-Suppose, to the contrary, that $\kappa(G)<k$.  Then there exists a vertex set $C\subseteq V(G)$ with $|C|=c<k$ whose removal separates the graph: there are vertices $s,t\in V(G)\setminus C$ that lie in distinct components of $G-C$.  Every $s$–$t$ path in $G$ must meet $C$, because otherwise it would survive in $G-C$ and join the two components.
+The bridge \(v_{1}u_{1}\) is a radial segment from radius \(R\) to radius \(r\);
+its whole interior is contained in the annulus
+\(\{\,r\le \|x\|\le R\,\}\) and stays at distance at least
+\(R-\varepsilon> r+\varepsilon\) from both stars. Consequently
+\(v_{1}u_{1}\) does not intersect either obstacle.
 
-Take any family $\mathcal P$ of internally disjoint $s$–$t$ paths.  Since the internal vertices of the paths are pairwise distinct, each path contributes at least one distinct vertex of $C$ (otherwise two different paths would avoid $C$ and stay disjoint, contradicting the separation).  Hence  
-
-\[
-|\mathcal P|\le |C|=c<k,
-\]
-
-which contradicts the hypothesis that **at least $k$** such paths exist for the pair $(s,t)$.  Therefore no vertex cut of size $<k$ exists, i.e. $\kappa(G)\ge k$.
-
-Because $|V(G)|\ge k+1$ is assumed, the condition “more than $k$ vertices’’ required in the definition of $k$‑connectedness is satisfied.  Hence $G$ is $k$‑vertex‑connected.
-
---------------------------------------------------------------------
-
-### 3.  Edge‑case verification  
-
-* If $|V(G)|=k+1$, the only $k$‑connected graph is the complete graph $K_{k+1}$.  Between any two vertices there are exactly $k$ internally disjoint paths (each uses a different intermediate vertex), so the theorem holds.
-* If $|V(G)|\le k$, the statement’s hypothesis “at least $k+1$ vertices’’ is violated; indeed a graph with fewer vertices cannot be $k$‑connected, and the path condition may fail (e.g., a path on three vertices cannot have two internally disjoint $s$–$t$ paths).  Hence the hypothesis is necessary.
+Thus **every edge of \(G\) avoids the interiors of both obstacles**.
 
 --------------------------------------------------------------------
 
-## Proof summary
+### 2.4. Verification that every non‑edge meets at least one interior
 
-* **Forward direction** – model vertex capacities by splitting vertices, apply the max‑flow/min‑cut theorem, obtain a flow of value $k$, and decompose it into $k$ internally disjoint $s$–$t$ paths.
-* **Reverse direction** – a vertex cut of size $<k$ would intersect every $s$–$t$ path, limiting the number of internally disjoint paths to $<k$, contradicting the hypothesis.  
+The non‑edges of \(G\) are of three types.
 
-Thus the two statements are equivalent, establishing Menger’s theorem for vertex‑connectivity.
+1. **Diagonals of the outer pentagon**  
+   Any diagonal \(\overline{p_{v_i}p_{v_j}}\) (\(|i-j|\neq 1\)) crosses the
+   interior of the convex hull of the five points
+   \(\{q_{v_k}\}\), i.e. the outer star \(\mathcal O_{\text{out}}\).  
+   Indeed, the outer star is a convex polygon that strictly contains the
+   convex hull of the outer vertices; a diagonal of a convex pentagon meets the
+   interior of any convex set that contains the pentagon’s interior.
 
-\[
-\boxed{\;G\text{ is }k\text{-vertex-connected}\iff
-\forall\,s\neq t\in V(G)\;\exists\;k\text{ internally disjoint }s\!-\!t\text{ paths}\;}
-\]
+2. **Diagonals of the inner pentagon**  
+   Analogously each diagonal \(\overline{p_{u_i}p_{u_j}}\) meets the interior of
+   \(\mathcal O_{\text{in}}\).
 
-∎
-
-[WORK_COMPLETE]
+3. **All other pairs** (a vertex of one pentagon with a non‑adjacent vertex of
+   the other).  
+   For any such pair the straight segment necessarily passes either
+   through the outer star (if it goes from an inner vertex outward) or
+   through the inner star (if
