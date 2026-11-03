@@ -3,6 +3,12 @@ import os, requests, subprocess
 api_key = os.environ.get("GROQ_API_KEY")
 issue_number = os.environ["ISSUE_NUMBER"]
 
+# Notfallschalter prüfen
+labels = subprocess.check_output(["gh", "issue", "view", issue_number, "--json", "labels", "-q", ".labels[].name"], text=True)
+if "emergency-stop" in labels:
+    print("🚨 NOTFALLSCHALTER AKTIVIERT. Agent wird gestoppt.")
+    raise SystemExit(0)
+
 # 1. Lese den bisherigen Verlauf (Aufgabe + Kommentar des Managers)
 issue_context = subprocess.check_output(["gh", "issue", "view", issue_number, "--json", "body,comments"]).decode("utf-8")
 
