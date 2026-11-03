@@ -22,6 +22,6 @@ jobs:
       - run: pip install requests
       - run: python agent_supervisor_review.py
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }} 
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           PR_NUMBER: ${{ github.event.inputs.pr_number || github.event.pull_request.number }}
