@@ -1,7 +1,5 @@
 name: 2 - Supervisor Review
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
   workflow_dispatch:
     inputs:
       pr_number:
