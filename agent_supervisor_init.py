@@ -1,6 +1,6 @@
 import os, requests, subprocess, time
 
-time.sleep(90)
+
 api_key = os.environ.get("GROQ_API_KEY")
 issue_number = os.environ["ISSUE_NUMBER"]
 issue_body = subprocess.check_output(["gh", "issue", "view", issue_number, "--json", "body", "-q", ".body"], text=True)
