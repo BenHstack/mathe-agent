@@ -1,7 +1,7 @@
 name: 3 - Reviewer
 on:
   pull_request:
-    types: [opened]
+    types: [opened, synchronize] 
 permissions:
   contents: write
   pull-requests: write
@@ -11,6 +11,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
       - run: pip install requests
       - run: python agent_reviewer.py
         env:
